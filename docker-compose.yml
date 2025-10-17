@@ -1,0 +1,49 @@
+# docker compose up
+---
+name: score_service
+services:
+  mongo:
+    image: mongo:7.0.5-jammy
+    restart: always
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 3s
+    env_file:
+      - path: ./default.env
+        required: true
+    volumes:
+      - mongo:/data/db
+      - mongo-config:/data/configdb
+    ports:
+      - 27019:27017
+    attach: false
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend-dev.Dockerfile
+    restart: always
+    volumes:
+      - ./main.ts:/app/backend/main.ts
+      - ./src:/app/backend/src
+      - ./node_modules:/app/backend/node_modules
+      - ./tsconfig.json:/app/backend/tsconfig.json
+      - ./globals.d.ts:/app/backend/globals.d.ts
+      - ./dev.js:/app/dev.js
+    env_file:
+      - path: ./default.env
+        required: true
+    ports:
+      - 8585:8585
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo:
+    external: true
+  mongo-config:
+    external: true

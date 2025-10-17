@@ -1,0 +1,71 @@
+# ansible-playbook -i inventory.ini build.yml --ask-become-pass
+---
+- name: "BUILD"
+  hosts: localhost
+  vars:
+    build_image: score-service-build:latest
+
+  tasks:
+    - name: "Build Docker Image"
+      ansible.builtin.shell: docker build -f backend-build.Dockerfile -t {{ build_image }} .
+      changed_when: false
+
+    - name: "Delete old build"
+      ansible.builtin.file:
+        path: "./release"
+        state: absent
+      become: true
+      changed_when: false
+
+    - name: "Transpile TypeScript"
+      ansible.builtin.shell: docker run --rm \
+        -v ./main.ts:/app/backend/main.ts \
+        -v ./src:/app/backend/src \
+        -v ./node_modules:/app/backend/node_modules \
+        -v ./tsconfig.json:/app/backend/tsconfig.json \
+        -v ./globals.d.ts:/app/backend/globals.d.ts \
+        -v ./release:/app/backend/dist \
+        -w /app \
+        {{ build_image }} \
+        tsc --project backend/tsconfig.json
+      changed_when: false
+
+    - name: "Change owner and group"
+      ansible.builtin.file:
+        path: "release"
+        owner: "{{ build_owner }}"
+        group: "{{ build_group }}"
+        recurse: true
+      become: true
+      changed_when: false
+
+    - name: "Copy package.json"
+      ansible.builtin.copy:
+        src: "package.json"
+        dest: "./release/package.json"
+      changed_when: false
+
+    - name: "Copy package.json"
+      ansible.builtin.copy:
+        src: "package-lock.json"
+        dest: "./release/package-lock.json"
+      changed_when: false
+
+    - name: "NPM CI"
+      ansible.builtin.shell: npm ci --omit=dev --prefix release
+      changed_when: false
+
+    - name: "Save git status info"
+      ansible.builtin.shell: git status > release/git-status
+      changed_when: false
+
+    - name: "Save git log"
+      ansible.builtin.shell: git log -10 > release/git-log
+      ignore_errors: true
+      changed_when: false
+
+    - name: "Make archive"
+      community.general.archive:
+        path: "release/*"
+        dest: ./release.zip
+        format: zip

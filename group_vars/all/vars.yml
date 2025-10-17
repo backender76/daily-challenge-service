@@ -1,0 +1,10 @@
+---
+# Параметры сборки
+build_owner: "user"
+build_group: "user"
+
+# Переменные шаблона конфига Nginx-хоста
+api_host_name: "api.site.ru"
+
+# Переменные шаблона конфига сервиса
+linux_user: "user"

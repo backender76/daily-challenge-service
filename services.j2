@@ -1,0 +1,19 @@
+[Unit]
+Description={{ service_name }}
+
+[Service]
+ExecStart={{ node_path }} {{ services_path }}/main.js
+WorkingDirectory={{ services_path }}
+Restart=always
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier={{ service_name }}
+User={{ linux_user }}
+
+{% for line in lookup('file', './.env').splitlines() if line.strip() and not line.startswith('#') %}
+Environment={{ line | replace('"','') }}
+{% endfor %}
+
+[Install]
+WantedBy=multi-user.target

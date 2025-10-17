@@ -1,0 +1,12 @@
+.idea
+.DS_Store
+/node_modules/
+/dist/
+/release/
+*.zip
+TODO.md
+inventory.ini
+.env
+service.service
+.vault-pass
+tests/tests/rustore.test.ts
