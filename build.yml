@@ -3,7 +3,7 @@
 - name: "BUILD"
   hosts: localhost
   vars:
-    build_image: score-service-build:latest
+    build_image: daily-challenge-service-build:latest
 
   tasks:
     - name: "Build Docker Image"

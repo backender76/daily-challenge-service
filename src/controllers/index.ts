@@ -1,1 +1,1 @@
-export * as score from "./score";
+export * as dailyChallenge from "./daily-challenge";

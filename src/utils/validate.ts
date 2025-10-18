@@ -11,9 +11,10 @@ interface Response {
 
 const validation = {
   required: (value: any) => typeof value !== "undefined" && (!validation.string(value) || value !== ""),
-  string: (value: any) => typeof value === "string",
-  number: (value: any) => typeof value === "number",
-  boolean: (value: any) => typeof value === "boolean",
+  string: (value: any) => typeof value === "undefined" || typeof value === "string",
+  number: (value: any) => typeof value === "undefined" || typeof value === "number",
+  digits: (value: any) => typeof value === "undefined" || /^[0-9]+$/.test(value),
+  boolean: (value: any) => typeof value === "undefined" || typeof value === "boolean",
   min: (value: any, min: number) => value >= min,
   range: (value: any, min: number, max: number) => value >= min && value <= max,
 };

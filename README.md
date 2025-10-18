@@ -1,8 +1,8 @@
-# Score Service
+# Daily Challenge Service
 
 ## Полезые ссылки
 
-Ссылка для подключения в Compass: `mongodb://demo:demo@localhost:27019/push`
+Ссылка для подключения в Compass: `mongodb://demo:demo@localhost:27019/api`
 
 ## Зависимости
 
@@ -27,6 +27,16 @@ ansible_python_interpreter=/usr/bin/python3.9
 
 4) Выполнить `npm ci`.
 
+## Разработка и тестирование
+
+```bash
+docker compose build
+docker compose up
+
+cd tests
+./node_modules/.bin/_mocha 'tests/challenge.test.ts'
+```
+
 ## Сборка и Деплой
 
 ```bash
@@ -36,9 +46,10 @@ ansible-playbook -i inventory.ini build.yml --ask-become-pass
 
 ansible-playbook -i inventory.ini deploy.yml
 
-sudo journalctl -u score-service.service -f
+sudo journalctl -u daily-challenge-service.service -f
 ```
 
 ### Секреты
 
-`ansible-vault view host_vars/production-1/vault.yml`
+`EDITOR=nano ansible-vault view host_vars/production-1/vault.yml`
+`EDITOR=nano ansible-vault view host_vars/localhost/vault.yml`

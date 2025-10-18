@@ -4,7 +4,7 @@
   hosts: production
   vars:
     # Переменные шаблона конфига сервиса
-    service_name: "score-service"
+    service_name: "daily-challenge-service"
     node_path: "/usr/local/bin/node"
     # linux_user: "user"
     # Переменные шаблона конфига Nginx-хоста
