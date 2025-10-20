@@ -1,7 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 
 export const CORS = (req: Request, res: Response, next: NextFunction) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const origin = req.headers && req.headers["origin"] ? req.headers["origin"] : undefined;
+
+  res.setHeader("Access-Control-Allow-Origin", origin ? origin : "*");
 
   res.setHeader(
     "Access-Control-Allow-Headers",
